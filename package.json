@@ -19,12 +19,16 @@
   ],
   "main": "target/wasm32-wasip1/release/swc_plugin_import_resolver.wasm",
   "scripts": {
-    "prepublishOnly": "cargo build-wasi --release"
+    "prepublishOnly": "cargo build --target wasm32-wasip1 --release"
   },
   "files": [
     "target/wasm32-wasip1/release/swc_plugin_import_resolver.wasm",
     "README.md",
     "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "preferUnplugged": true
 }
