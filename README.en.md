@@ -50,7 +50,7 @@ pnpm add -D swc-plugin-import-resolver
 
 | Option      | Type       | Default | Description                                          |
 | ----------- | ---------- | ------- | ---------------------------------------------------- |
-| `aliases`   | `string[]` | `[]`    | Path aliases to resolve (e.g., `@/*`, `$/*`)       |
+| `aliases`   | `string[]` | `[]`    | Path aliases to resolve (e.g., `@/*`, `$/*`)         |
 | `extension` | `string`   | `".js"` | Target extension, e.g., `.js`, `.mjs`, `.cjs`        |
 | `dir_index` | `string[]` | `[]`    | Directory imports to auto-resolve as `path/index.js` |
 
