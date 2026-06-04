@@ -1785,7 +1785,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "swc-plugin-import-extension-resolver"
+name = "swc-plugin-import-resolver"
 version = "0.2.0"
 dependencies = [
  "globset",

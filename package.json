@@ -1,20 +1,30 @@
 {
-  "name": "swc-plugin-import-extension-resolver",
-  "version": "0.2.3",
+  "name": "swc-plugin-import-resolver",
+  "version": "0.1.0",
   "description": "A SWC plugin to resolve import extensions. (e.g. `import 'foo'` -> `import 'foo.js'`)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cffnpwr/swc-plugin-import-extension-resolver.git"
+    "url": "https://github.com/hlwen/swc-plugin-import-resolver.git"
   },
-  "author": "CaffeinePower <cffnpwr@gmail.com>",
+  "author": "CaffeinePower <helianwen@hotmail.com>",
   "license": "MIT",
   "keywords": [
-    "swc-plugin"
+    "swc-plugin",
+    "import-resolver",
+    "extension",
+    "typescript",
+    "javascript",
+    "esm",
+    "transform"
   ],
-  "main": "target/wasm32-wasip1/release/swc_plugin_import_extension_resolver.wasm",
+  "main": "target/wasm32-wasip1/release/swc_plugin_import_resolver.wasm",
   "scripts": {
     "prepublishOnly": "cargo build-wasi --release"
   },
-  "files": [],
+  "files": [
+    "target/wasm32-wasip1/release/swc_plugin_import_resolver.wasm",
+    "README.md",
+    "LICENSE"
+  ],
   "preferUnplugged": true
 }
