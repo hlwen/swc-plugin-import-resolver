@@ -11,7 +11,7 @@
   "keywords": [
     "swc-plugin"
   ],
-  "main": "target/wasm32-wasi/release/swc_plugin_import_extension_resolver.wasm",
+  "main": "target/wasm32-wasip1/release/swc_plugin_import_extension_resolver.wasm",
   "scripts": {
     "prepublishOnly": "cargo build-wasi --release"
   },
