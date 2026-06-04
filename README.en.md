@@ -4,6 +4,8 @@
 
 An SWC plugin to automatically resolve and append extensions for TypeScript/JavaScript module import paths.
 
+> This project is based on [cffnpwr/swc-plugin-import-extension-resolver](https://github.com/cffnpwr/swc-plugin-import-extension-resolver).
+
 ## Features
 
 - **Automatic Extension Resolution**: Converts `.ts` to `.js` (or `.mjs`, `.cjs`, etc.)

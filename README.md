@@ -4,6 +4,8 @@
 
 SWC 插件，用于自动解析和补全 TypeScript/JavaScript 模块导入路径的扩展名。
 
+> 本项目基于 [cffnpwr/swc-plugin-import-extension-resolver](https://github.com/cffnpwr/swc-plugin-import-extension-resolver) 修改而来。
+
 ## 功能特性
 
 - **自动补全扩展名**：将 `.ts` 转换为 `.js`（或 `.mjs`、`.cjs` 等）
