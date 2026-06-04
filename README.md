@@ -1,5 +1,7 @@
 # swc-plugin-import-resolver
 
+> 中文 | [English](README.en.md)
+
 SWC 插件，用于自动解析和补全 TypeScript/JavaScript 模块导入路径的扩展名。
 
 ## 功能特性
