@@ -12,6 +12,7 @@ import { iface } from "./interfaces";
 import { json } from "./metadata.json";
 import { css } from "./styles.css";
 import { skipMe } from "./skip-me";
+import { appModule } from "./app.module";
 `;
     const config = { aliases: ['@/*'] };
     if (extension !== undefined) config.extension = extension;

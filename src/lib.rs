@@ -157,11 +157,46 @@ fn transform_extension(
     }
   }
 
-  // 如果路径已经有扩展名（不是 .ts），直接返回原路径
-  // 例如：./metadata.json → 不做处理
+  // 判断路径是否已有扩展名（.js/.mjs/.cjs/.json/.css 等），如果是则跳过
+  // 注意：.module 不是扩展名，应该加 .js
   if let Some(file_name) = std::path::Path::new(&src).file_name() {
     if let Some(file_str) = file_name.to_str() {
-      if file_str.contains('.') && !src.ends_with(".ts") {
+      let has_known_ext = file_str.ends_with(".js")
+        || file_str.ends_with(".mjs")
+        || file_str.ends_with(".cjs")
+        || file_str.ends_with(".json")
+        || file_str.ends_with(".css")
+        || file_str.ends_with(".png")
+        || file_str.ends_with(".svg")
+        || file_str.ends_with(".jpg")
+        || file_str.ends_with(".jpeg")
+        || file_str.ends_with(".gif")
+        || file_str.ends_with(".webp")
+        || file_str.ends_with(".woff")
+        || file_str.ends_with(".woff2")
+        || file_str.ends_with(".ttf")
+        || file_str.ends_with(".eot")
+        || file_str.ends_with(".otf")
+        || file_str.ends_with(".mp3")
+        || file_str.ends_with(".mp4")
+        || file_str.ends_with(".wav")
+        || file_str.ends_with(".ogg")
+        || file_str.ends_with(".webm")
+        || file_str.ends_with(".pdf")
+        || file_str.ends_with(".zip")
+        || file_str.ends_with(".tar")
+        || file_str.ends_with(".gz")
+        || file_str.ends_with(".bz2")
+        || file_str.ends_with(".7z")
+        || file_str.ends_with(".rar")
+        || file_str.ends_with(".exe")
+        || file_str.ends_with(".dll")
+        || file_str.ends_with(".so")
+        || file_str.ends_with(".dylib")
+        || file_str.ends_with(".node")
+        || file_str.ends_with(".wasm")
+        || file_str.ends_with(".map");
+      if has_known_ext && !src.ends_with(".ts") {
         return src;
       }
     }
