@@ -48,12 +48,13 @@ pnpm add -D swc-plugin-import-resolver
 
 ### Options
 
-| Option      | Type       | Default | Description                                          |
-| ----------- | ---------- | ------- | ---------------------------------------------------- |
-| `aliases`   | `string[]` | `[]`    | Path aliases to resolve (e.g., `@/*`, `$/*`)         |
-| `extension` | `string`   | `".js"` | Target extension, e.g., `.js`, `.mjs`, `.cjs`        |
-| `dir_index` | `string[]` | `[]`    | Directory imports to auto-resolve as `path/index.js` |
-| `skip`      | `string[]` | `[]`    | Path patterns to skip (supports glob)                |
+| Option              | Type       | Default | Description                                          |
+| ------------------- | ---------- | ------- | ---------------------------------------------------- |
+| `aliases`           | `string[]` | `[]`    | Path aliases to resolve (e.g., `@/*`, `$/*`)         |
+| `extension`         | `string`   | `".js"` | Target extension, e.g., `.js`, `.mjs`, `.cjs`        |
+| `dir_index`         | `string[]` | `[]`    | Directory imports to auto-resolve as `path/index.js` |
+| `skip`              | `string[]` | `[]`    | Path patterns to skip (supports glob)                |
+| `skip_extensions`   | `string[]` | see below | List of extensions to skip                           |
 
 ## Examples
 
@@ -161,6 +162,29 @@ Use `skip` to specify path patterns that should be left untouched. Supports glob
 - `*.json` — Skip all `.json` files
 - `*.css` — Skip all `.css` files
 - `./skip-me` — Skip a specific path
+
+### Skip Extensions
+
+```json
+{
+  "jsc": {
+    "experimental": {
+      "plugins": [
+        [
+          "swc-plugin-import-resolver",
+          {
+            "skip_extensions": [".js", ".mjs", ".cjs", ".json", ".css", ".png"]
+          }
+        ]
+      ]
+    }
+  }
+}
+```
+
+Use `skip_extensions` to specify which file extensions should be left untouched. Default extensions:
+
+`.js` `.mjs` `.cjs` `.json` `.css` `.png` `.svg` `.jpg` `.jpeg` `.gif` `.webp` `.woff` `.woff2` `.ttf` `.eot` `.otf` `.mp3` `.mp4` `.wav` `.ogg` `.webm` `.pdf` `.zip` `.tar` `.gz` `.bz2` `.7z` `.rar` `.exe` `.dll` `.so` `.dylib` `.node` `.wasm` `.map`
 
 ## Complete `.swcrc` Example
 

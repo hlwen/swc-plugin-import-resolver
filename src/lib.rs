@@ -19,6 +19,48 @@ struct Config {
   dir_index: Option<Vec<String>>,
   #[serde(default)]
   skip: Option<Vec<String>>,
+  #[serde(default = "default_skip_extensions")]
+  skip_extensions: Vec<String>,
+}
+
+fn default_skip_extensions() -> Vec<String> {
+  vec![
+    ".js".to_string(),
+    ".mjs".to_string(),
+    ".cjs".to_string(),
+    ".json".to_string(),
+    ".css".to_string(),
+    ".png".to_string(),
+    ".svg".to_string(),
+    ".jpg".to_string(),
+    ".jpeg".to_string(),
+    ".gif".to_string(),
+    ".webp".to_string(),
+    ".woff".to_string(),
+    ".woff2".to_string(),
+    ".ttf".to_string(),
+    ".eot".to_string(),
+    ".otf".to_string(),
+    ".mp3".to_string(),
+    ".mp4".to_string(),
+    ".wav".to_string(),
+    ".ogg".to_string(),
+    ".webm".to_string(),
+    ".pdf".to_string(),
+    ".zip".to_string(),
+    ".tar".to_string(),
+    ".gz".to_string(),
+    ".bz2".to_string(),
+    ".7z".to_string(),
+    ".rar".to_string(),
+    ".exe".to_string(),
+    ".dll".to_string(),
+    ".so".to_string(),
+    ".dylib".to_string(),
+    ".node".to_string(),
+    ".wasm".to_string(),
+    ".map".to_string(),
+  ]
 }
 
 fn default_extension() -> String {
@@ -30,6 +72,7 @@ pub struct TransformVisitor {
   extension: String,
   dir_index: Option<Vec<String>>,
   skip: Option<Vec<Glob>>,
+  skip_extensions: Vec<String>,
 }
 
 impl TransformVisitor {
@@ -39,6 +82,7 @@ impl TransformVisitor {
       extension: ".js".to_string(),
       dir_index: None,
       skip: None,
+      skip_extensions: default_skip_extensions(),
     }
   }
 
@@ -48,11 +92,13 @@ impl TransformVisitor {
     extension: String,
     dir_index: Option<Vec<String>>,
     skip: Option<Vec<Glob>>,
+    skip_extensions: Vec<String>,
   ) {
     self.aliases = aliases;
     self.extension = extension;
     self.dir_index = dir_index;
     self.skip = skip;
+    self.skip_extensions = skip_extensions;
   }
 }
 
@@ -74,6 +120,7 @@ impl VisitMut for TransformVisitor {
         &self.extension,
         &self.dir_index,
         &self.skip,
+        &self.skip_extensions,
       )
       .into(),
     );
@@ -96,6 +143,7 @@ impl VisitMut for TransformVisitor {
         &self.extension,
         &self.dir_index,
         &self.skip,
+        &self.skip_extensions,
       )
       .into(),
     );
@@ -125,6 +173,7 @@ impl VisitMut for TransformVisitor {
         &self.extension,
         &self.dir_index,
         &self.skip,
+        &self.skip_extensions,
       )
       .into(),
     ));
@@ -137,6 +186,7 @@ fn transform_extension(
   extension: &str,
   dir_index: &Option<Vec<String>>,
   skip: &Option<Vec<Glob>>,
+  skip_extensions: &[String],
 ) -> String {
   // 如果路径匹配 skip 模式，直接返回原路径
   if let Some(skip_patterns) = skip {
@@ -159,44 +209,9 @@ fn transform_extension(
 
   // 判断路径是否已有扩展名（.js/.mjs/.cjs/.json/.css 等），如果是则跳过
   // 注意：.module 不是扩展名，应该加 .js
-  if let Some(file_name) = std::path::Path::new(&src).file_name() {
-    if let Some(file_str) = file_name.to_str() {
-      let has_known_ext = file_str.ends_with(".js")
-        || file_str.ends_with(".mjs")
-        || file_str.ends_with(".cjs")
-        || file_str.ends_with(".json")
-        || file_str.ends_with(".css")
-        || file_str.ends_with(".png")
-        || file_str.ends_with(".svg")
-        || file_str.ends_with(".jpg")
-        || file_str.ends_with(".jpeg")
-        || file_str.ends_with(".gif")
-        || file_str.ends_with(".webp")
-        || file_str.ends_with(".woff")
-        || file_str.ends_with(".woff2")
-        || file_str.ends_with(".ttf")
-        || file_str.ends_with(".eot")
-        || file_str.ends_with(".otf")
-        || file_str.ends_with(".mp3")
-        || file_str.ends_with(".mp4")
-        || file_str.ends_with(".wav")
-        || file_str.ends_with(".ogg")
-        || file_str.ends_with(".webm")
-        || file_str.ends_with(".pdf")
-        || file_str.ends_with(".zip")
-        || file_str.ends_with(".tar")
-        || file_str.ends_with(".gz")
-        || file_str.ends_with(".bz2")
-        || file_str.ends_with(".7z")
-        || file_str.ends_with(".rar")
-        || file_str.ends_with(".exe")
-        || file_str.ends_with(".dll")
-        || file_str.ends_with(".so")
-        || file_str.ends_with(".dylib")
-        || file_str.ends_with(".node")
-        || file_str.ends_with(".wasm")
-        || file_str.ends_with(".map");
-      if has_known_ext && !src.ends_with(".ts") {
+  if !src.ends_with(".ts") {
+    for ext in skip_extensions {
+      if src.ends_with(ext) {
         return src;
       }
     }
@@ -260,6 +275,7 @@ pub fn process_transform(
     config
       .skip
       .map(|patterns| patterns.iter().map(|p| Glob::new(p).unwrap()).collect()),
+    config.skip_extensions,
   );
 
   program.visit_mut_with(&mut visitor);

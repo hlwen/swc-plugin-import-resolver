@@ -48,12 +48,13 @@ pnpm add -D swc-plugin-import-resolver
 
 ### 配置选项
 
-| 选项        | 类型       | 默认值  | 说明                                      |
-| ----------- | ---------- | ------- | ----------------------------------------- |
-| `aliases`   | `string[]` | `[]`    | 需要处理的路径别名（如 `@/*`、`$/*`）     |
-| `extension` | `string`   | `".js"` | 目标扩展名，可选 `.js`、`.mjs`、`.cjs` 等 |
-| `dir_index` | `string[]` | `[]`    | 目录导入列表，自动补全为 `path/index.js`  |
-| `skip`      | `string[]` | `[]`    | 跳过处理的路径模式（支持 glob）           |
+| 选项              | 类型       | 默认值  | 说明                                      |
+| ----------------- | ---------- | ------- | ----------------------------------------- |
+| `aliases`         | `string[]` | `[]`    | 需要处理的路径别名（如 `@/*`、`$/*`）     |
+| `extension`       | `string`   | `".js"` | 目标扩展名，可选 `.js`、`.mjs`、`.cjs` 等 |
+| `dir_index`       | `string[]` | `[]`    | 目录导入列表，自动补全为 `path/index.js`  |
+| `skip`            | `string[]` | `[]`    | 跳过处理的路径模式（支持 glob）           |
+| `skip_extensions` | `string[]` | 见下    | 已有扩展名列表，匹配则跳过                |
 
 ## 转换示例
 
@@ -161,6 +162,29 @@ import { Something } from "./interfaces/index.js";
 - `*.json` — 跳过所有 `.json` 文件
 - `*.css` — 跳过所有 `.css` 文件
 - `./skip-me` — 跳过特定路径
+
+### 配置跳过扩展名
+
+```json
+{
+  "jsc": {
+    "experimental": {
+      "plugins": [
+        [
+          "swc-plugin-import-resolver",
+          {
+            "skip_extensions": [".js", ".mjs", ".cjs", ".json", ".css", ".png"]
+          }
+        ]
+      ]
+    }
+  }
+}
+```
+
+使用 `skip_extensions` 配置可以指定哪些扩展名应该跳过处理。默认包含常见扩展名：
+
+`.js` `.mjs` `.cjs` `.json` `.css` `.png` `.svg` `.jpg` `.jpeg` `.gif` `.webp` `.woff` `.woff2` `.ttf` `.eot` `.otf` `.mp3` `.mp4` `.wav` `.ogg` `.webm` `.pdf` `.zip` `.tar` `.gz` `.bz2` `.7z` `.rar` `.exe` `.dll` `.so` `.dylib` `.node` `.wasm` `.map`
 
 ## 完整 `.swcrc` 示例
 
