@@ -1,7 +1,7 @@
 const swc = require('@swc/core');
 const path = require('path');
 
-const wasmPath = path.resolve('target/wasm32-wasip1/release/swc_plugin_import_extension_resolver.wasm');
+const wasmPath = path.resolve('target/wasm32-wasip1/release/swc_plugin_import_resolver.wasm');
 
 async function test(extension, dirIndex) {
   try {
@@ -9,6 +9,8 @@ async function test(extension, dirIndex) {
 import { bar } from "@/bar";
 import { baz } from "lodash";
 import { iface } from "./interfaces";
+import { json } from "./metadata.json";
+import { css } from "./styles.css";
 `;
     const config = { aliases: ['@/*'] };
     if (extension !== undefined) config.extension = extension;

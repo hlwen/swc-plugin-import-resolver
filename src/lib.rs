@@ -117,6 +117,16 @@ fn transform_extension(
     }
   }
 
+  // 如果路径已经有扩展名（不是 .ts），直接返回原路径
+  // 例如：./metadata.json → 不做处理
+  if let Some(file_name) = std::path::Path::new(&src).file_name() {
+    if let Some(file_str) = file_name.to_str() {
+      if file_str.contains('.') && !src.ends_with(".ts") {
+        return src;
+      }
+    }
+  }
+
   let ts_re = Regex::new(r"^([\./].+)(\.ts)$").unwrap();
   let ext = extension;
 
