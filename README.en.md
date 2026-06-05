@@ -53,6 +53,7 @@ pnpm add -D swc-plugin-import-resolver
 | `aliases`   | `string[]` | `[]`    | Path aliases to resolve (e.g., `@/*`, `$/*`)         |
 | `extension` | `string`   | `".js"` | Target extension, e.g., `.js`, `.mjs`, `.cjs`        |
 | `dir_index` | `string[]` | `[]`    | Directory imports to auto-resolve as `path/index.js` |
+| `skip`      | `string[]` | `[]`    | Path patterns to skip (supports glob)                |
 
 ## Examples
 
@@ -136,6 +137,31 @@ import { Something } from "./interfaces/index.js";
 }
 ```
 
+### Skip Patterns
+
+```json
+{
+  "jsc": {
+    "experimental": {
+      "plugins": [
+        [
+          "swc-plugin-import-resolver",
+          {
+            "skip": ["*.json", "*.css", "*.png"]
+          }
+        ]
+      ]
+    }
+  }
+}
+```
+
+Use `skip` to specify path patterns that should be left untouched. Supports glob patterns:
+
+- `*.json` — Skip all `.json` files
+- `*.css` — Skip all `.css` files
+- `./skip-me` — Skip a specific path
+
 ## Complete `.swcrc` Example
 
 ```json
@@ -160,7 +186,8 @@ import { Something } from "./interfaces/index.js";
           {
             "aliases": ["@/*"],
             "extension": ".js",
-            "dir_index": ["./interfaces"]
+            "dir_index": ["./interfaces"],
+            "skip": ["*.json", "*.css"]
           }
         ]
       ]

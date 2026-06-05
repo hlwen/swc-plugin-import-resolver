@@ -53,6 +53,7 @@ pnpm add -D swc-plugin-import-resolver
 | `aliases`   | `string[]` | `[]`    | 需要处理的路径别名（如 `@/*`、`$/*`）     |
 | `extension` | `string`   | `".js"` | 目标扩展名，可选 `.js`、`.mjs`、`.cjs` 等 |
 | `dir_index` | `string[]` | `[]`    | 目录导入列表，自动补全为 `path/index.js`  |
+| `skip`      | `string[]` | `[]`    | 跳过处理的路径模式（支持 glob）           |
 
 ## 转换示例
 
@@ -136,6 +137,31 @@ import { Something } from "./interfaces/index.js";
 }
 ```
 
+### 配置跳过规则
+
+```json
+{
+  "jsc": {
+    "experimental": {
+      "plugins": [
+        [
+          "swc-plugin-import-resolver",
+          {
+            "skip": ["*.json", "*.css", "*.png"]
+          }
+        ]
+      ]
+    }
+  }
+}
+```
+
+使用 `skip` 配置可以指定哪些路径模式应该跳过处理。支持 glob 模式：
+
+- `*.json` — 跳过所有 `.json` 文件
+- `*.css` — 跳过所有 `.css` 文件
+- `./skip-me` — 跳过特定路径
+
 ## 完整 `.swcrc` 示例
 
 ```json
@@ -160,7 +186,8 @@ import { Something } from "./interfaces/index.js";
           {
             "aliases": ["@/*"],
             "extension": ".js",
-            "dir_index": ["./interfaces"]
+            "dir_index": ["./interfaces"],
+            "skip": ["*.json", "*.css"]
           }
         ]
       ]

@@ -17,6 +17,8 @@ struct Config {
   extension: String,
   #[serde(default)]
   dir_index: Option<Vec<String>>,
+  #[serde(default)]
+  skip: Option<Vec<String>>,
 }
 
 fn default_extension() -> String {
@@ -27,6 +29,7 @@ pub struct TransformVisitor {
   aliases: Option<Vec<String>>,
   extension: String,
   dir_index: Option<Vec<String>>,
+  skip: Option<Vec<Glob>>,
 }
 
 impl TransformVisitor {
@@ -35,6 +38,7 @@ impl TransformVisitor {
       aliases: None,
       extension: ".js".to_string(),
       dir_index: None,
+      skip: None,
     }
   }
 
@@ -43,10 +47,12 @@ impl TransformVisitor {
     aliases: Option<Vec<String>>,
     extension: String,
     dir_index: Option<Vec<String>>,
+    skip: Option<Vec<Glob>>,
   ) {
     self.aliases = aliases;
     self.extension = extension;
     self.dir_index = dir_index;
+    self.skip = skip;
   }
 }
 
@@ -61,8 +67,16 @@ impl VisitMut for TransformVisitor {
       .map(|alias| Glob::new(alias).unwrap())
       .collect();
 
-    decl.src =
-      Box::new(transform_extension(src, alias_globs, &self.extension, &self.dir_index).into());
+    decl.src = Box::new(
+      transform_extension(
+        src,
+        alias_globs,
+        &self.extension,
+        &self.dir_index,
+        &self.skip,
+      )
+      .into(),
+    );
   }
 
   fn visit_mut_export_all(&mut self, decl: &mut ExportAll) {
@@ -75,8 +89,16 @@ impl VisitMut for TransformVisitor {
       .map(|alias| Glob::new(alias).unwrap())
       .collect();
 
-    decl.src =
-      Box::new(transform_extension(src, alias_globs, &self.extension, &self.dir_index).into());
+    decl.src = Box::new(
+      transform_extension(
+        src,
+        alias_globs,
+        &self.extension,
+        &self.dir_index,
+        &self.skip,
+      )
+      .into(),
+    );
   }
 
   fn visit_mut_named_export(&mut self, named_export: &mut NamedExport) {
@@ -97,7 +119,14 @@ impl VisitMut for TransformVisitor {
       .collect();
 
     named_export.src = Some(Box::new(
-      transform_extension(src, alias_globs, &self.extension, &self.dir_index).into(),
+      transform_extension(
+        src,
+        alias_globs,
+        &self.extension,
+        &self.dir_index,
+        &self.skip,
+      )
+      .into(),
     ));
   }
 }
@@ -107,7 +136,18 @@ fn transform_extension(
   alias_glob: Vec<Glob>,
   extension: &str,
   dir_index: &Option<Vec<String>>,
+  skip: &Option<Vec<Glob>>,
 ) -> String {
+  // 如果路径匹配 skip 模式，直接返回原路径
+  if let Some(skip_patterns) = skip {
+    if skip_patterns
+      .iter()
+      .any(|pattern| pattern.compile_matcher().is_match(src.as_str()))
+    {
+      return src;
+    }
+  }
+
   // 处理 dir_index 目录导入
   if let Some(dirs) = dir_index {
     for dir in dirs {
@@ -178,7 +218,14 @@ pub fn process_transform(
   .expect("invalid plugin config");
 
   let mut visitor = TransformVisitor::new();
-  visitor.set_config(config.aliases, config.extension, config.dir_index);
+  visitor.set_config(
+    config.aliases,
+    config.extension,
+    config.dir_index,
+    config
+      .skip
+      .map(|patterns| patterns.iter().map(|p| Glob::new(p).unwrap()).collect()),
+  );
 
   program.visit_mut_with(&mut visitor);
   program
@@ -192,14 +239,14 @@ mod transform_tests {
 
   fn test_visitor() -> impl 'static + Fold + VisitMut {
     let mut visitor = TransformVisitor::new();
-    visitor.set_config(None, ".js".to_string(), None);
+    visitor.set_config(None, ".js".to_string(), None, None);
 
     visitor
   }
 
   fn test_visitor_with_alias() -> impl 'static + Fold + VisitMut {
     let mut visitor = TransformVisitor::new();
-    visitor.set_config(Some(vec!["@/*".to_string()]), ".js".to_string(), None);
+    visitor.set_config(Some(vec!["@/*".to_string()]), ".js".to_string(), None, None);
 
     visitor
   }
