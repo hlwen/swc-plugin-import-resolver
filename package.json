@@ -1,6 +1,6 @@
 {
   "name": "swc-plugin-import-resolver",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A SWC plugin to resolve import extensions. (e.g. `import 'foo'` -> `import 'foo.js'`)",
   "repository": {
     "type": "git",

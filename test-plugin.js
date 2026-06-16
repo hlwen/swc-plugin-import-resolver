@@ -17,6 +17,7 @@ import { AppLogger } from "./modules/logger";
 import { Utils } from "./modules/utils";
 import { SdkService } from "./sdk.service";
 import { SDK_OPTIONS } from "./constants";
+import { B2cModule } from "./modules/b2c/b2c.module";
 `;
     const config = { aliases: ['@/*'] };
     if (extension !== undefined) config.extension = extension;

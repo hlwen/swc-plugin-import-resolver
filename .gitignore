@@ -1,7 +1,5 @@
-/target
-^target/
 target
 swc-core-1.15.40.tgz
 .history
 node_modules
-.swc
+.swc/

@@ -48,15 +48,15 @@ pnpm add -D swc-plugin-import-resolver
 
 ### Options
 
-| Option                | Type       | Default   | Description                                              |
-| --------------------- | ---------- | --------- | -------------------------------------------------------- |
-| `aliases`             | `string[]` | `[]`      | Path aliases to resolve (e.g., `@/*`, `$/*`)             |
-| `extension`           | `string`   | `".js"`   | Target extension, e.g., `.js`, `.mjs`, `.cjs`            |
-| `dir_index`           | `string[]` | `[]`      | Directory imports (exact match) to resolve as `path/index.js` |
-| `dir_index_patterns`  | `string[]` | `[]`      | Directory import patterns (glob) to resolve as `path/index.js` |
-| `auto_dir_index`      | `boolean`  | `false`   | Auto-resolve multi-segment extensionless relative paths as directory imports |
-| `skip`                | `string[]` | `[]`      | Path patterns to skip (supports glob)                    |
-| `skip_extensions`     | `string[]` | see below | List of extensions to skip                               |
+| Option               | Type       | Default   | Description                                                                  |
+| -------------------- | ---------- | --------- | ---------------------------------------------------------------------------- |
+| `aliases`            | `string[]` | `[]`      | Path aliases to resolve (e.g., `@/*`, `$/*`)                                 |
+| `extension`          | `string`   | `".js"`   | Target extension, e.g., `.js`, `.mjs`, `.cjs`                                |
+| `dir_index`          | `string[]` | `[]`      | Directory imports (exact match) to resolve as `path/index.js`                |
+| `dir_index_patterns` | `string[]` | `[]`      | Directory import patterns (glob) to resolve as `path/index.js`               |
+| `auto_dir_index`     | `boolean`  | `false`   | Auto-resolve multi-segment extensionless relative paths as directory imports |
+| `skip`               | `string[]` | `[]`      | Path patterns to skip (supports glob)                                        |
+| `skip_extensions`    | `string[]` | see below | List of extensions to skip                                                   |
 
 ## Examples
 

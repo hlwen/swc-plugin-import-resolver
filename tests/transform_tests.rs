@@ -1,4 +1,7 @@
-use swc_core::ecma::{transforms::testing::test, visit::{Fold, VisitMut}};
+use swc_core::ecma::{
+  transforms::testing::test,
+  visit::{Fold, VisitMut},
+};
 use swc_plugin_import_resolver::TransformVisitor;
 
 fn test_visitor() -> impl 'static + Fold + VisitMut {

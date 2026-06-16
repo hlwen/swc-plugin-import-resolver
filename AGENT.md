@@ -7,7 +7,7 @@
 **名称**: swc-plugin-import-resolver  
 **类型**: SWC WASM 插件（Rust）  
 **功能**: 在 SWC 编译时自动解析和补全 TypeScript/JavaScript 模块导入路径的扩展名  
-**目标平台**: `wasm32-wasip1`  
+**目标平台**: `wasm32-wasip1`
 
 ### 核心能力
 
@@ -21,14 +21,14 @@
 
 ## 技术栈
 
-| 技术 | 版本 | 说明 |
-|------|------|------|
-| Rust | stable | 核心开发语言 |
-| swc_core | 68.0.* | SWC 插件框架 |
-| wasm32-wasip1 | - | WASM 目标平台 |
-| serde | 1.0.225+ | JSON 序列化 |
-| globset | 0.4.10 | glob 模式匹配 |
-| regex | 1.8.4 | 正则表达式 |
+| 技术          | 版本     | 说明          |
+| ------------- | -------- | ------------- |
+| Rust          | stable   | 核心开发语言  |
+| swc_core      | 68.0.\*  | SWC 插件框架  |
+| wasm32-wasip1 | -        | WASM 目标平台 |
+| serde         | 1.0.225+ | JSON 序列化   |
+| globset       | 0.4.10   | glob 模式匹配 |
+| regex         | 1.8.4    | 正则表达式    |
 
 ### 关键依赖约束
 
@@ -81,6 +81,7 @@ struct Config {
 ```
 
 **添加新配置项步骤**：
+
 1. 在 `Config` 结构体中添加字段
 2. 在 `TransformVisitor` 中添加对应字段
 3. 在 `set_config` 中赋值
@@ -103,6 +104,7 @@ struct Config {
 - **测试覆盖**: 每个新功能必须包含测试用例
 
 **添加测试的步骤**：
+
 1. 在 `test-plugin.js` 中添加新的测试场景
 2. 运行 `node test-plugin.js` 验证
 3. 在 `#[cfg(test)]` 模块中添加 Rust 单元测试
@@ -125,6 +127,7 @@ node test-plugin.js
 ```
 
 **构建配置**（`.cargo/config.toml`）：
+
 ```toml
 [target.wasm32-wasip1]
 rustflags = ["-C", "link-arg=--allow-undefined"]
@@ -136,7 +139,7 @@ rustflags = ["-C", "link-arg=--allow-undefined"]
 2. 修改 `package.json` 中的 `version`
 3. 构建 Release: `cargo build --target wasm32-wasip1 --release`
 4. 测试：`node test-plugin.js`
-5. 提交代码：`git commit -m "chore: bump version to x.x.x"`
+5. 提交代码：`git commit -m "chore: bump version to x.x.x"`，不要自动提交代码，代码需要人工审核
 6. 打 Tag：`git tag vx.x.x`
 7. 推送触发 Trusted Publishing
 
@@ -146,19 +149,19 @@ rustflags = ["-C", "link-arg=--allow-undefined"]
 
 ### 编译问题
 
-| 错误 | 原因 | 解决 |
-|------|------|------|
-| `serde::__private` not found | serde 版本过低 | 升级 serde 到 1.0.185+ |
-| WASM linking error | 缺少 `--allow-undefined` | 检查 `.cargo/config.toml` |
-| `failed to invoke plugin` | ABI 版本不匹配 | 检查 `swc_core` 与 `@swc/core` 版本 |
+| 错误                         | 原因                     | 解决                                |
+| ---------------------------- | ------------------------ | ----------------------------------- |
+| `serde::__private` not found | serde 版本过低           | 升级 serde 到 1.0.185+              |
+| WASM linking error           | 缺少 `--allow-undefined` | 检查 `.cargo/config.toml`           |
+| `failed to invoke plugin`    | ABI 版本不匹配           | 检查 `swc_core` 与 `@swc/core` 版本 |
 
 ### 运行时问题
 
-| 错误 | 原因 | 解决 |
-|------|------|------|
-| `Cannot find module 'xxx.json.js'` | 对已有扩展名路径错误处理 | 添加已有扩展名检查逻辑 |
-| `Cannot find module 'xxx'` | 路径未被处理 | 检查路径是否匹配本地导入规则 |
-| 目录导入失败 | 未配置 `dir_index` | 在配置中添加目录路径 |
+| 错误                               | 原因                     | 解决                         |
+| ---------------------------------- | ------------------------ | ---------------------------- |
+| `Cannot find module 'xxx.json.js'` | 对已有扩展名路径错误处理 | 添加已有扩展名检查逻辑       |
+| `Cannot find module 'xxx'`         | 路径未被处理             | 检查路径是否匹配本地导入规则 |
+| 目录导入失败                       | 未配置 `dir_index`       | 在配置中添加目录路径         |
 
 ---
 
@@ -208,7 +211,7 @@ fn transform_extension(..., new_feature: &Option<String>) -> String {
 #[cfg(test)]
 mod transform_tests {
   // ...
-  
+
   test!(
     Default::default(),
     |_| test_visitor_with_new_feature(),

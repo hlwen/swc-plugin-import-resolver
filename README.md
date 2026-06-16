@@ -54,7 +54,7 @@ pnpm add -D swc-plugin-import-resolver
 | `extension`          | `string`   | `".js"` | 目标扩展名，可选 `.js`、`.mjs`、`.cjs` 等               |
 | `dir_index`          | `string[]` | `[]`    | 目录导入列表（精确匹配），自动补全为 `path/index.js`    |
 | `dir_index_patterns` | `string[]` | `[]`    | 目录导入模式（支持 glob），匹配则补全为 `path/index.js` |
-| `auto_dir_index`     | `boolean`  | `false` | 多段无后缀相对路径自动视为目录导入                   |
+| `auto_dir_index`     | `boolean`  | `false` | 多段无后缀相对路径自动视为目录导入                      |
 | `skip`               | `string[]` | `[]`    | 跳过处理的路径模式（支持 glob）                         |
 | `skip_extensions`    | `string[]` | 见下    | 已有扩展名列表，匹配则跳过                              |
 
