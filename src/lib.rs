@@ -23,6 +23,8 @@ struct Config {
   skip: Option<Vec<String>>,
   #[serde(default = "default_skip_extensions")]
   skip_extensions: Vec<String>,
+  #[serde(default)]
+  auto_dir_index: bool,
 }
 
 fn default_skip_extensions() -> Vec<String> {
@@ -76,6 +78,7 @@ pub struct TransformVisitor {
   dir_index_patterns: Option<Vec<Glob>>,
   skip: Option<Vec<Glob>>,
   skip_extensions: Vec<String>,
+  auto_dir_index: bool,
 }
 
 impl TransformVisitor {
@@ -87,6 +90,7 @@ impl TransformVisitor {
       dir_index_patterns: None,
       skip: None,
       skip_extensions: default_skip_extensions(),
+      auto_dir_index: false,
     }
   }
 
@@ -98,6 +102,7 @@ impl TransformVisitor {
     dir_index_patterns: Option<Vec<Glob>>,
     skip: Option<Vec<Glob>>,
     skip_extensions: Vec<String>,
+    auto_dir_index: bool,
   ) {
     self.aliases = aliases;
     self.extension = extension;
@@ -105,6 +110,7 @@ impl TransformVisitor {
     self.dir_index_patterns = dir_index_patterns;
     self.skip = skip;
     self.skip_extensions = skip_extensions;
+    self.auto_dir_index = auto_dir_index;
   }
 }
 
@@ -128,6 +134,7 @@ impl VisitMut for TransformVisitor {
         &self.dir_index_patterns,
         &self.skip,
         &self.skip_extensions,
+        self.auto_dir_index,
       )
       .into(),
     );
@@ -152,6 +159,7 @@ impl VisitMut for TransformVisitor {
         &self.dir_index_patterns,
         &self.skip,
         &self.skip_extensions,
+        self.auto_dir_index,
       )
       .into(),
     );
@@ -183,6 +191,7 @@ impl VisitMut for TransformVisitor {
         &self.dir_index_patterns,
         &self.skip,
         &self.skip_extensions,
+        self.auto_dir_index,
       )
       .into(),
     ));
@@ -197,6 +206,7 @@ fn transform_extension(
   dir_index_patterns: &Option<Vec<Glob>>,
   skip: &Option<Vec<Glob>>,
   skip_extensions: &[String],
+  auto_dir_index: bool,
 ) -> String {
   // 如果路径匹配 skip 模式，直接返回原路径
   if let Some(skip_patterns) = skip {
@@ -234,6 +244,25 @@ fn transform_extension(
     for ext in skip_extensions {
       if src.ends_with(ext) {
         return src;
+      }
+    }
+  }
+
+  // auto_dir_index: 多段无后缀相对路径自动视为目录导入
+  // 规则：相对路径包含多个段（如 ./modules/logger）且文件名无 "." 时
+  // 自动解析为 path/index.js
+  // 单段路径（如 ./constants）不受影响，仍然添加 .js
+  // 例如:
+  //   "./modules/logger" -> "./modules/logger/index.js" (多段，无扩展名)
+  //   "./constants"      -> "./constants.js"            (单段，不受影响)
+  //   "./sdk.service"    -> "./sdk.service.js"          (文件名含 "."，不受影响)
+  if auto_dir_index && src.starts_with('.') {
+    if let Some(file_name) = std::path::Path::new(&src).file_name() {
+      if let Some(file_str) = file_name.to_str() {
+        // 文件名无 "." 且路径有多段（包含两个以上 "/" 或不是简单的 "./xxx"）
+        if !file_str.contains('.') && src.matches('/').count() > 1 {
+          return format!("{}/index{}", src, extension);
+        }
       }
     }
   }
@@ -300,6 +329,7 @@ pub fn process_transform(
       .skip
       .map(|patterns| patterns.iter().map(|p| Glob::new(p).unwrap()).collect()),
     config.skip_extensions,
+    config.auto_dir_index,
   );
 
   program.visit_mut_with(&mut visitor);

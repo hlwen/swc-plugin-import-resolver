@@ -48,14 +48,15 @@ pnpm add -D swc-plugin-import-resolver
 
 ### 配置选项
 
-| 选项                  | 类型       | 默认值  | 说明                                            |
-| --------------------- | ---------- | ------- | ----------------------------------------------- |
-| `aliases`             | `string[]` | `[]`    | 需要处理的路径别名（如 `@/*`、`$/*`）           |
-| `extension`           | `string`   | `".js"` | 目标扩展名，可选 `.js`、`.mjs`、`.cjs` 等       |
-| `dir_index`           | `string[]` | `[]`    | 目录导入列表（精确匹配），自动补全为 `path/index.js` |
-| `dir_index_patterns`  | `string[]` | `[]`    | 目录导入模式（支持 glob），匹配则补全为 `path/index.js` |
-| `skip`                | `string[]` | `[]`    | 跳过处理的路径模式（支持 glob）                 |
-| `skip_extensions`     | `string[]` | 见下    | 已有扩展名列表，匹配则跳过                      |
+| 选项                 | 类型       | 默认值  | 说明                                                    |
+| -------------------- | ---------- | ------- | ------------------------------------------------------- |
+| `aliases`            | `string[]` | `[]`    | 需要处理的路径别名（如 `@/*`、`$/*`）                   |
+| `extension`          | `string`   | `".js"` | 目标扩展名，可选 `.js`、`.mjs`、`.cjs` 等               |
+| `dir_index`          | `string[]` | `[]`    | 目录导入列表（精确匹配），自动补全为 `path/index.js`    |
+| `dir_index_patterns` | `string[]` | `[]`    | 目录导入模式（支持 glob），匹配则补全为 `path/index.js` |
+| `auto_dir_index`     | `boolean`  | `false` | 多段无后缀相对路径自动视为目录导入                   |
+| `skip`               | `string[]` | `[]`    | 跳过处理的路径模式（支持 glob）                         |
+| `skip_extensions`    | `string[]` | 见下    | 已有扩展名列表，匹配则跳过                              |
 
 ## 转换示例
 
@@ -169,6 +170,33 @@ import { UserService } from "./services/user";
 import { AppLogger } from "./modules/logger/index.js";
 import { UserService } from "./services/user/index.js";
 ```
+
+### 自动目录索引
+
+```json
+{
+  "jsc": {
+    "experimental": {
+      "plugins": [
+        [
+          "swc-plugin-import-resolver",
+          {
+            "auto_dir_index": true
+          }
+        ]
+      ]
+    }
+  }
+}
+```
+
+开启 `auto_dir_index` 后，多段无后缀的相对路径会自动视为目录导入。规则：
+
+- `./modules/logger` → `./modules/logger/index.js`（多段 + 无扩展名 → 目录）
+- `./constants` → `./constants.js`（单段 → 文件，不受影响）
+- `./sdk.service` → `./sdk.service.js`（文件名含 `.` → 文件，不受影响）
+
+适用于使用显式 `.ts` 后缀导入的项目。
 
 ### 配置跳过规则
 

@@ -54,6 +54,7 @@ pnpm add -D swc-plugin-import-resolver
 | `extension`           | `string`   | `".js"`   | Target extension, e.g., `.js`, `.mjs`, `.cjs`            |
 | `dir_index`           | `string[]` | `[]`      | Directory imports (exact match) to resolve as `path/index.js` |
 | `dir_index_patterns`  | `string[]` | `[]`      | Directory import patterns (glob) to resolve as `path/index.js` |
+| `auto_dir_index`      | `boolean`  | `false`   | Auto-resolve multi-segment extensionless relative paths as directory imports |
 | `skip`                | `string[]` | `[]`      | Path patterns to skip (supports glob)                    |
 | `skip_extensions`     | `string[]` | see below | List of extensions to skip                               |
 
@@ -169,6 +170,33 @@ import { UserService } from "./services/user";
 import { AppLogger } from "./modules/logger/index.js";
 import { UserService } from "./services/user/index.js";
 ```
+
+### Auto Directory Index
+
+```json
+{
+  "jsc": {
+    "experimental": {
+      "plugins": [
+        [
+          "swc-plugin-import-resolver",
+          {
+            "auto_dir_index": true
+          }
+        ]
+      ]
+    }
+  }
+}
+```
+
+When `auto_dir_index` is enabled, multi-segment extensionless relative paths are automatically treated as directory imports. Rules:
+
+- `./modules/logger` → `./modules/logger/index.js` (multi-segment + no extension → directory)
+- `./constants` → `./constants.js` (single-segment → file, unaffected)
+- `./sdk.service` → `./sdk.service.js` (filename contains `.` → file, unaffected)
+
+Ideal for projects using explicit `.ts` suffix imports.
 
 ### Skip Patterns
 
