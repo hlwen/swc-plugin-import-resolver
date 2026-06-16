@@ -48,13 +48,14 @@ pnpm add -D swc-plugin-import-resolver
 
 ### Options
 
-| Option              | Type       | Default | Description                                          |
-| ------------------- | ---------- | ------- | ---------------------------------------------------- |
-| `aliases`           | `string[]` | `[]`    | Path aliases to resolve (e.g., `@/*`, `$/*`)         |
-| `extension`         | `string`   | `".js"` | Target extension, e.g., `.js`, `.mjs`, `.cjs`        |
-| `dir_index`         | `string[]` | `[]`    | Directory imports to auto-resolve as `path/index.js` |
-| `skip`              | `string[]` | `[]`    | Path patterns to skip (supports glob)                |
-| `skip_extensions`   | `string[]` | see below | List of extensions to skip                           |
+| Option                | Type       | Default   | Description                                              |
+| --------------------- | ---------- | --------- | -------------------------------------------------------- |
+| `aliases`             | `string[]` | `[]`      | Path aliases to resolve (e.g., `@/*`, `$/*`)             |
+| `extension`           | `string`   | `".js"`   | Target extension, e.g., `.js`, `.mjs`, `.cjs`            |
+| `dir_index`           | `string[]` | `[]`      | Directory imports (exact match) to resolve as `path/index.js` |
+| `dir_index_patterns`  | `string[]` | `[]`      | Directory import patterns (glob) to resolve as `path/index.js` |
+| `skip`                | `string[]` | `[]`      | Path patterns to skip (supports glob)                    |
+| `skip_extensions`     | `string[]` | see below | List of extensions to skip                               |
 
 ## Examples
 
@@ -136,6 +137,37 @@ import { Something } from "./interfaces/index.js";
     }
   }
 }
+```
+
+### Configuring Directory Index Patterns (glob)
+
+```json
+{
+  "jsc": {
+    "experimental": {
+      "plugins": [
+        [
+          "swc-plugin-import-resolver",
+          {
+            "dir_index_patterns": ["./modules/*", "./services/*"]
+          }
+        ]
+      ]
+    }
+  }
+}
+```
+
+Use `dir_index_patterns` to match directory imports using glob patterns. Matched paths will be auto-resolved to `path/index.js`:
+
+```ts
+// Before
+import { AppLogger } from "./modules/logger";
+import { UserService } from "./services/user";
+
+// After
+import { AppLogger } from "./modules/logger/index.js";
+import { UserService } from "./services/user/index.js";
 ```
 
 ### Skip Patterns

@@ -48,13 +48,14 @@ pnpm add -D swc-plugin-import-resolver
 
 ### 配置选项
 
-| 选项              | 类型       | 默认值  | 说明                                      |
-| ----------------- | ---------- | ------- | ----------------------------------------- |
-| `aliases`         | `string[]` | `[]`    | 需要处理的路径别名（如 `@/*`、`$/*`）     |
-| `extension`       | `string`   | `".js"` | 目标扩展名，可选 `.js`、`.mjs`、`.cjs` 等 |
-| `dir_index`       | `string[]` | `[]`    | 目录导入列表，自动补全为 `path/index.js`  |
-| `skip`            | `string[]` | `[]`    | 跳过处理的路径模式（支持 glob）           |
-| `skip_extensions` | `string[]` | 见下    | 已有扩展名列表，匹配则跳过                |
+| 选项                  | 类型       | 默认值  | 说明                                            |
+| --------------------- | ---------- | ------- | ----------------------------------------------- |
+| `aliases`             | `string[]` | `[]`    | 需要处理的路径别名（如 `@/*`、`$/*`）           |
+| `extension`           | `string`   | `".js"` | 目标扩展名，可选 `.js`、`.mjs`、`.cjs` 等       |
+| `dir_index`           | `string[]` | `[]`    | 目录导入列表（精确匹配），自动补全为 `path/index.js` |
+| `dir_index_patterns`  | `string[]` | `[]`    | 目录导入模式（支持 glob），匹配则补全为 `path/index.js` |
+| `skip`                | `string[]` | `[]`    | 跳过处理的路径模式（支持 glob）                 |
+| `skip_extensions`     | `string[]` | 见下    | 已有扩展名列表，匹配则跳过                      |
 
 ## 转换示例
 
@@ -136,6 +137,37 @@ import { Something } from "./interfaces/index.js";
     }
   }
 }
+```
+
+### 配置目录索引模式（glob）
+
+```json
+{
+  "jsc": {
+    "experimental": {
+      "plugins": [
+        [
+          "swc-plugin-import-resolver",
+          {
+            "dir_index_patterns": ["./modules/*", "./services/*"]
+          }
+        ]
+      ]
+    }
+  }
+}
+```
+
+使用 `dir_index_patterns` 可以通过 glob 模式匹配目录导入。匹配的路径会自动补全为 `path/index.js`：
+
+```ts
+// 转换前
+import { AppLogger } from "./modules/logger";
+import { UserService } from "./services/user";
+
+// 转换后
+import { AppLogger } from "./modules/logger/index.js";
+import { UserService } from "./services/user/index.js";
 ```
 
 ### 配置跳过规则

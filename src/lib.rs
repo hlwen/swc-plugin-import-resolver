@@ -18,6 +18,8 @@ struct Config {
   #[serde(default)]
   dir_index: Option<Vec<String>>,
   #[serde(default)]
+  dir_index_patterns: Option<Vec<String>>,
+  #[serde(default)]
   skip: Option<Vec<String>>,
   #[serde(default = "default_skip_extensions")]
   skip_extensions: Vec<String>,
@@ -71,6 +73,7 @@ pub struct TransformVisitor {
   aliases: Option<Vec<String>>,
   extension: String,
   dir_index: Option<Vec<String>>,
+  dir_index_patterns: Option<Vec<Glob>>,
   skip: Option<Vec<Glob>>,
   skip_extensions: Vec<String>,
 }
@@ -81,6 +84,7 @@ impl TransformVisitor {
       aliases: None,
       extension: ".js".to_string(),
       dir_index: None,
+      dir_index_patterns: None,
       skip: None,
       skip_extensions: default_skip_extensions(),
     }
@@ -91,12 +95,14 @@ impl TransformVisitor {
     aliases: Option<Vec<String>>,
     extension: String,
     dir_index: Option<Vec<String>>,
+    dir_index_patterns: Option<Vec<Glob>>,
     skip: Option<Vec<Glob>>,
     skip_extensions: Vec<String>,
   ) {
     self.aliases = aliases;
     self.extension = extension;
     self.dir_index = dir_index;
+    self.dir_index_patterns = dir_index_patterns;
     self.skip = skip;
     self.skip_extensions = skip_extensions;
   }
@@ -119,6 +125,7 @@ impl VisitMut for TransformVisitor {
         alias_globs,
         &self.extension,
         &self.dir_index,
+        &self.dir_index_patterns,
         &self.skip,
         &self.skip_extensions,
       )
@@ -142,6 +149,7 @@ impl VisitMut for TransformVisitor {
         alias_globs,
         &self.extension,
         &self.dir_index,
+        &self.dir_index_patterns,
         &self.skip,
         &self.skip_extensions,
       )
@@ -172,6 +180,7 @@ impl VisitMut for TransformVisitor {
         alias_globs,
         &self.extension,
         &self.dir_index,
+        &self.dir_index_patterns,
         &self.skip,
         &self.skip_extensions,
       )
@@ -185,6 +194,7 @@ fn transform_extension(
   alias_glob: Vec<Glob>,
   extension: &str,
   dir_index: &Option<Vec<String>>,
+  dir_index_patterns: &Option<Vec<Glob>>,
   skip: &Option<Vec<Glob>>,
   skip_extensions: &[String],
 ) -> String {
@@ -198,11 +208,22 @@ fn transform_extension(
     }
   }
 
-  // 处理 dir_index 目录导入
+  // 处理 dir_index 目录导入（精确匹配）
   if let Some(dirs) = dir_index {
     for dir in dirs {
       if src == *dir || src.starts_with(&format!("{}/", dir)) {
         return format!("{}/index{}", dir, extension);
+      }
+    }
+  }
+
+  // 处理 dir_index_patterns 目录导入（glob 模式匹配）
+  // 例如 "./modules/*" 匹配 "./modules/logger" -> "./modules/logger/index.js"
+  if let Some(patterns) = dir_index_patterns {
+    for pattern in patterns {
+      let matcher = pattern.compile_matcher();
+      if matcher.is_match(src.as_str()) {
+        return format!("{}/index{}", src, extension);
       }
     }
   }
@@ -272,6 +293,9 @@ pub fn process_transform(
     config.aliases,
     config.extension,
     config.dir_index,
+    config
+      .dir_index_patterns
+      .map(|patterns| patterns.iter().map(|p| Glob::new(p).unwrap()).collect()),
     config
       .skip
       .map(|patterns| patterns.iter().map(|p| Glob::new(p).unwrap()).collect()),
